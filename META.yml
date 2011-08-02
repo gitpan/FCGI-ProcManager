@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               FCGI-ProcManager
-version:            0.21
+version:            0.20
 abstract:           A perl-based FastCGI process manager
 author:
     - James E Jurach (muaddib@erf.net)
@@ -15,7 +15,7 @@ no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.57_05
+generated_by:       ExtUtils::MakeMaker version 6.55_02
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4

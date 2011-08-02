@@ -1,6 +1,2 @@
-^FCGI-ProcManager-
-MANIFEST.bak
-Makefile$
-MYMETA.yml
-.git/
-
+^MANIFEST$
+blib
