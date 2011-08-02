@@ -1,21 +1,9 @@
-blib/arch/.exists
-blib/arch/auto/FCGI/ProcManager/.exists
-blib/bin/.exists
-blib/lib/auto/FCGI/ProcManager/.exists
-blib/lib/FCGI/.exists
-blib/lib/FCGI/ProcManager.pm
-blib/lib/FCGI/ProcManager/Constrained.pm
-blib/man1/.exists
-blib/man3/.exists
-blib/man3/FCGI::ProcManager.3pm
-blib/script/.exists
 ChangeLog
 COPYING
 lib/FCGI/ProcManager.pm
 lib/FCGI/ProcManager/Constrained.pm
 MANIFEST			This list of files
 MANIFEST.SKIP
-pm_to_blib
 README
 t/exporter.t
 t/procmanager.t
