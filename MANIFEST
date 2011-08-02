@@ -1,11 +1,24 @@
-COPYING
-MANIFEST
-MANIFEST.SKIP
+blib/arch/.exists
+blib/arch/auto/FCGI/ProcManager/.exists
+blib/bin/.exists
+blib/lib/auto/FCGI/ProcManager/.exists
+blib/lib/FCGI/.exists
+blib/lib/FCGI/ProcManager.pm
+blib/lib/FCGI/ProcManager/Constrained.pm
+blib/man1/.exists
+blib/man3/.exists
+blib/man3/FCGI::ProcManager.3pm
+blib/script/.exists
 ChangeLog
-Makefile.PL
-ProcManager.pm
+COPYING
+lib/FCGI/ProcManager.pm
+lib/FCGI/ProcManager/Constrained.pm
+MANIFEST			This list of files
+MANIFEST.SKIP
+pm_to_blib
 README
-TODO
-t/procmanager.t
 t/exporter.t
+t/procmanager.t
+t/procmanager_constrained.pm
+TODO
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -13,14 +13,14 @@ use POSIX qw(:signal_h);
 
 use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS $Q $SIG_CODEREF);
 BEGIN {
-  $VERSION = '0.19'; 
+  $VERSION = '0.20'; 
   @ISA = qw(Exporter);
   @EXPORT_OK = qw(pm_manage pm_die pm_wait
-		  pm_write_pid_file pm_remove_pid_file
-		  pm_pre_dispatch pm_post_dispatch
-  		  pm_change_process_name pm_received_signal pm_parameter 
-		  pm_warn pm_notify pm_abort pm_exit
-		  $SIG_CODEREF);
+          pm_write_pid_file pm_remove_pid_file
+          pm_pre_dispatch pm_post_dispatch
+          pm_change_process_name pm_received_signal pm_parameter 
+          pm_warn pm_notify pm_abort pm_exit
+          $SIG_CODEREF);
   $EXPORT_TAGS{all} = \@EXPORT_OK;
   $FCGI::ProcManager::Default = 'FCGI::ProcManager';
 }
@@ -31,12 +31,11 @@ BEGIN {
 
 =head1 SYNOPSIS
 
-{
  # In Object-oriented style.
  use CGI::Fast;
  use FCGI::ProcManager;
  my $proc_manager = FCGI::ProcManager->new({
-	n_processes => 10 
+    n_processes => 10
  });
  $proc_manager->pm_manage();
  while (my $cgi = CGI::Fast->new()) {
@@ -47,8 +46,8 @@ BEGIN {
 
  # This style is also supported:
  use CGI::Fast;
- use FCGI::ProcManager qw(pm_manage pm_pre_dispatch 
-			  pm_post_dispatch);
+ use FCGI::ProcManager qw(pm_manage pm_pre_dispatch
+              pm_post_dispatch);
  pm_manage( n_processes => 10 );
  while (my $cgi = CGI::Fast->new()) {
    pm_pre_dispatch();
@@ -82,7 +81,7 @@ insert a call to C<pm_pre_dispatch> at the top of the loop, and then
 FCGI::ProcManager attempts to do the right thing for proper shutdowns now.
 
 When it receives a SIGHUP, it sends a SIGTERM to each of its children, and
-then resumes its normal operations.   
+then resumes its normal operations.
 
 When it receives a SIGTERM, it sends a SIGTERM to each of its children, sets
 an alarm(3) "die timeout" handler, and waits for each of its children to
@@ -92,24 +91,10 @@ occurs, the process manager sends a SIGKILL to each of the remaining
 children, and exists with return status 1.
 
 In order to get FastCGI servers to exit upon receiving a signal, it is
-necessary to use its FAIL_ACCEPT_ON_INTR.  See FCGI.pm's description of
-FAIL_ACCEPT_ON_INTR.  Unfortunately, if you want/need to use CGI::Fast, it
-appears currently necessary to modify your installation of FCGI.pm, with
-something like the following:
-
- -*- patch -*-
- --- FCGI.pm     2001/03/09 01:44:00     1.1.1.3
- +++ FCGI.pm     2001/03/09 01:47:32     1.2
- @@ -24,7 +24,7 @@
-  *FAIL_ACCEPT_ON_INTR = sub() { 1 };
-  
-  sub Request(;***$$$) {
- -    my @defaults = (\*STDIN, \*STDOUT, \*STDERR, \%ENV, 0, 0);
- +    my @defaults = (\*STDIN, \*STDOUT, \*STDERR, \%ENV, 0, FAIL_ACCEPT_ON_INTR());
-      splice @defaults,0,@_,@_;
-      RequestX(@defaults);
-  }   
- -*- end patch -*-
+necessary to use its FAIL_ACCEPT_ON_INTR.  See L<FCGI>'s description of
+FAIL_ACCEPT_ON_INTR.  Unfortunately, if you want/need to use L<CGI::Fast>, it
+is currently necessary to run the latest (at the time of writing) development
+version of FCGI.pm. (>= 0.71_02)
 
 Otherwise, if you don't, there is a loop around accept(2) which prevents
 os_unix.c OS_Accept() from returning the necessary error when FastCGI
@@ -123,7 +108,7 @@ around the accept(2) loop, but re-enstate it otherwise.
 The desired (and implemented) effect is to give a request as big a chance as
 possible to succeed and to delay their exits until after their request,
 while allowing the FastCGI servers waiting for new requests to die right
-away. 
+away.
 
 =head1 METHODS
 
@@ -148,12 +133,12 @@ sub new {
   $init ||= {};
 
   my $this = { 
-	      role => "manager",
-	      start_delay => 0,
-	      die_timeout => 60,
+          role => "manager",
+          start_delay => 0,
+          die_timeout => 60,
         pm_title => 'perl-fcgi-pm',
-	      %$init
-	     };
+          %$init
+         };
   bless $this, ref($proto)||$proto;
 
   $this->{PIDS} = {};
@@ -161,9 +146,9 @@ sub new {
   # initialize signal constructions.
   unless ($this->no_signals()) {
     $this->{sigaction_no_sa_restart} =
-	POSIX::SigAction->new('FCGI::ProcManager::sig_sub');
+    POSIX::SigAction->new('FCGI::ProcManager::sig_sub');
     $this->{sigaction_sa_restart} =
-	POSIX::SigAction->new('FCGI::ProcManager::sig_sub',undef,POSIX::SA_RESTART);
+    POSIX::SigAction->new('FCGI::ProcManager::sig_sub',undef,POSIX::SA_RESTART);
   }
 
   return $this;
@@ -215,20 +200,20 @@ sub pm_manage {
   PIDS: while (keys(%{$this->{PIDS}}) < $this->n_processes()) {
 
       if (my $pid = fork()) {
-	# the manager remembers the server.
-	$this->{PIDS}->{$pid} = { pid=>$pid };
+    # the manager remembers the server.
+    $this->{PIDS}->{$pid} = { pid=>$pid };
         $this->pm_notify("server (pid $pid) started");
 
       } elsif (! defined $pid) {
-	return $this->pm_abort("fork: $!");
+    return $this->pm_abort("fork: $!");
 
       } else {
-	$this->{MANAGER_PID} = $manager_pid;
-	# the server exits the managing loop.
-	last MANAGING_LOOP;
+    $this->{MANAGER_PID} = $manager_pid;
+    # the server exits the managing loop.
+    last MANAGING_LOOP;
       }
 
-      for (my $s = $this->start_delay(); $s; $s = sleep $s) {};
+      for (my $s = $this->start_delay(); $s > 0; $s -= sleep $s) {};
     }
 
     # this should block until the next server dies.
@@ -271,9 +256,9 @@ sub managing_init {
   # -- we want start the shutdown sequence immediately upon SIGTERM.
   unless ($this->no_signals()) {
     sigaction(SIGTERM, $this->{sigaction_no_sa_restart}) or
-	$this->pm_warn("sigaction: SIGTERM: $!");
+    $this->pm_warn("sigaction: SIGTERM: $!");
     sigaction(SIGHUP,  $this->{sigaction_no_sa_restart}) or
-	$this->pm_warn("sigaction: SIGHUP: $!");
+    $this->pm_warn("sigaction: SIGHUP: $!");
     $SIG_CODEREF = sub { $this->sig_manager(@_) };
   }
 
@@ -546,7 +531,7 @@ default object if one is not passed in, e.g., a method call.
 sub self_or_default {
   return @_ if defined $_[0] and !ref $_[0] and $_[0] eq 'FCGI::ProcManager';
   if (!defined $_[0] or (ref($_[0]) ne 'FCGI::ProcManager' and
-			 !UNIVERSAL::isa($_[0],'FCGI::ProcManager'))) {
+             !UNIVERSAL::isa($_[0],'FCGI::ProcManager'))) {
     $Q or $Q = $FCGI::ProcManager::Default->new;
     unshift @_, $Q;
   }
