@@ -13,7 +13,7 @@ use POSIX qw(:signal_h);
 
 use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS $Q $SIG_CODEREF);
 BEGIN {
-  $VERSION = '0.22';
+  $VERSION = '0.23';
   @ISA = qw(Exporter);
   @EXPORT_OK = qw(pm_manage pm_die pm_wait
           pm_write_pid_file pm_remove_pid_file
@@ -181,6 +181,9 @@ sub pm_manage {
   my ($this,%values) = self_or_default(@_);
   map { $this->pm_parameter($_,$values{$_}) } keys %values;
 
+  local $SIG{CHLD}; # Replace the SIGCHLD default handler in case
+                    # somebody shit on it whilst loading code.
+
   # skip to handling now if we won't be managing any processes.
   $this->n_processes() or return;
 
@@ -332,7 +335,7 @@ sub pm_wait {
   my ($this) = self_or_default(@_);
 
   # wait for the next server to die.
-  next if (my $pid = wait()) < 0;
+  return if (my $pid = wait() < 0);
 
   # notify when one of our servers have died.
   delete $this->{PIDS}->{$pid} and
