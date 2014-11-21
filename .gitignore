@@ -1,8 +1,0 @@
-FCGI-ProcManager-*
-MANIFEST
-MANIFEST.bak
-MYMETA.*
-Makefile
-blib/
-pm_to_blib
-

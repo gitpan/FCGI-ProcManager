@@ -3,6 +3,7 @@ ChangeLog
 COPYING
 lib/FCGI/ProcManager.pm
 lib/FCGI/ProcManager/Constrained.pm
+Makefile.old
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP

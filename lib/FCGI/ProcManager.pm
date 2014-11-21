@@ -13,7 +13,7 @@ use POSIX qw(:signal_h);
 
 use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS $Q $SIG_CODEREF);
 BEGIN {
-  $VERSION = '0.24';
+  $VERSION = '0.25';
   @ISA = qw(Exporter);
   @EXPORT_OK = qw(pm_manage pm_die pm_wait
           pm_write_pid_file pm_remove_pid_file
@@ -103,7 +103,7 @@ servers blocking on accept(2) receive the SIGTERM or SIGHUP.
 FCGI::ProcManager uses POSIX::sigaction() to override the default SA_RESTART
 policy used for perl's %SIG behavior.  Specifically, the process manager
 never uses SA_RESTART, while the child FastCGI servers turn off SA_RESTART
-around the accept(2) loop, but re-enstate it otherwise.
+around the accept(2) loop, but reinstate it otherwise.
 
 The desired (and implemented) effect is to give a request as big a chance as
 possible to succeed and to delay their exits until after their request,
@@ -359,12 +359,13 @@ specified, it uses the value of the C<pid_fname> parameter.
 sub pm_write_pid_file {
   my ($this,$fname) = self_or_default(@_);
   $fname ||= $this->pid_fname() or return;
-  if (!open PIDFILE, ">$fname") {
+  my $PIDFILE;
+  if (!open $PIDFILE, ">$fname") {
     $this->pm_warn("open: $fname: $!");
     return;
   }
-  print PIDFILE "$$\n";
-  close PIDFILE;
+  print $PIDFILE "$$\n" or die "Could not print PID: $!";
+  close $PIDFILE or die "Could not close PID file: $!";
 }
 
 =head2 pm_remove_pid_file
@@ -455,6 +456,10 @@ sub handling_init {
 
   # change the name of this process as it appears in ps(1) output.
   $this->pm_change_process_name("perl-fcgi");
+
+  # Re-srand in case someone called rand before the fork, so that
+  # children get different random numbers.
+  srand;
 }
 
 =head2 pm_pre_dispatch

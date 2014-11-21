@@ -1,3 +1,8 @@
+0.25 2014-11-20 Andrew Rodland  <arodland@cpan.org>
+    * Notice errors writing out the PID file and abort.
+    * Make sure that children get independent random numbers by calling
+      srand() after fork.
+
 0.24 2011-10-04 Tomas Doran  <bobtfish@bobtfish.net>
     * Further fix to pm_wait routine to find the correct PID and remove it
       (fixing logical error introduced in the last release), noted by Vadim
