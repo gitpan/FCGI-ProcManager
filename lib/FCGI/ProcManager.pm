@@ -13,7 +13,7 @@ use POSIX qw(:signal_h);
 
 use vars qw($VERSION @ISA @EXPORT_OK %EXPORT_TAGS $Q $SIG_CODEREF);
 BEGIN {
-  $VERSION = '0.26_01';
+  $VERSION = '0.26_02';
   $VERSION = eval $VERSION;
   @ISA = qw(Exporter);
   @EXPORT_OK = qw(pm_manage pm_die pm_wait
@@ -145,7 +145,7 @@ sub new {
   $this->{PIDS} = {};
 
   # initialize signal constructions.
-  unless ($this->no_signals() or $^O eq 'Win32') {
+  unless ($this->no_signals() or $^O eq 'MSWin32') {
     $this->{sigaction_no_sa_restart} =
     POSIX::SigAction->new('FCGI::ProcManager::sig_sub');
     $this->{sigaction_sa_restart} =
@@ -158,7 +158,7 @@ sub new {
 sub _set_signal_handler {
   my ($this, $signal, $restart);
 
-  if ($^O eq 'Win32') {
+  if ($^O eq 'MSWin32') {
     $SIG{$signal} = 'FCGI::ProcManager::sig_sub';
   } else {
     no strict 'refs';

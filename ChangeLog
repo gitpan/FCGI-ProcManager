@@ -1,3 +1,6 @@
+0.26_02 2014-11-27 Andrew Rodland <arodland@cpan.org>
+    * Try again, with the OS name spelled properly.
+
 0.26_01 2014-11-26 Andrew Rodland <arodland@cpan.org>
     * Trial version of Win32 support
 
