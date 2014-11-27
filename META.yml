@@ -20,4 +20,4 @@ no_index:
 requires: {}
 resources:
   repository: git://git.shadowcat.co.uk/catagits/FCGI-ProcManager
-version: '0.25'
+version: 0.26_01

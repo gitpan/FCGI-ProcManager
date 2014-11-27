@@ -34,11 +34,11 @@
          "requires" : {}
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "repository" : {
          "url" : "git://git.shadowcat.co.uk/catagits/FCGI-ProcManager"
       }
    },
-   "version" : "0.25"
+   "version" : "0.26_01"
 }
